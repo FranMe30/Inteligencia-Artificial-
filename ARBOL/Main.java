@@ -6,10 +6,10 @@ public class Main {
 
        
         arbol.insertar("Maria");
-        arbol.insertar("Andrea");
-        arbol.insertar("Ernesto");
-        arbol.insertar("Fernanda");
-        arbol.insertar("Luis");
+        arbol.insertar("Francisco");
+        arbol.insertar("Gabriel");
+        arbol.insertar("Lanna");
+        arbol.insertar("Miguel");
 
         
         System.out.print("Recorrido inorden: ");
@@ -23,4 +23,5 @@ public class Main {
             System.out.println("\nEl nombre '" + buscar + "' NO está en el árbol.");
         }
     }
+
 }
