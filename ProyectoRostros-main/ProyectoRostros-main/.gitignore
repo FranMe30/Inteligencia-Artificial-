@@ -1,0 +1,29 @@
+# Entornos virtuales
+venv/
+.env/
+env/
+.venv/
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Caché de Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Configuración de IDE
+.vscode/
+.idea/
+
+# Datos (ignorar contenido, mantener carpetas)
+data/01_raw/*
+!data/01_raw/.gitkeep
+data/02_processed/*
+!data/02_processed/.gitkeep
+data/03_final/*
+!data/03_final/.gitkeep
+
+# Jupyter
+.ipynb_checkpoints
