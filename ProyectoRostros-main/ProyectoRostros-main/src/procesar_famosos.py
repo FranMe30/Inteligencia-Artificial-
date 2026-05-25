@@ -39,6 +39,7 @@ for nombre_personaje in os.listdir(input_dir):
         ruta_imagen = os.path.join(ruta_personaje_crudo, nombre_imagen)
         
         # Leer la imagen
+        #Carga imágenes desde el dataset.
         imagen = cv2.imread(ruta_imagen)
         
         # Si OpenCV no puede leer la imagen (archivo corrupto o formato no soportado), la saltamos
@@ -48,12 +49,12 @@ for nombre_personaje in os.listdir(input_dir):
         # Convertir a escala de grises para el detector
         grises = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
 
-        # Detectar rostros
+        # Detectar rostros, encuentra rostros dentro de la imagen.
         rostros = face_cascade.detectMultiScale(grises, scaleFactor=1.2, minNeighbors=5)
 
         # 3. Recortar y guardar cada rostro encontrado
         for (x, y, w, h) in rostros:
-            # Recortar solo la región del rostro
+            # Recortar solo la región del rostro, elimina fondo innecesario.
             rostro_recortado = imagen[y:y+h, x:x+w]
             
             try:
@@ -63,6 +64,7 @@ for nombre_personaje in os.listdir(input_dir):
                 # Guardar la imagen en la nueva carpeta
                 nombre_archivo = f"rostro_{contador}.jpg"
                 ruta_guardado = os.path.join(ruta_personaje_procesado, nombre_archivo)
+                #Guarda únicamente el rostro procesado
                 cv2.imwrite(ruta_guardado, rostro_redimensionado)
                 
                 contador += 1

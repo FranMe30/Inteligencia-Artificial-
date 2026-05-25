@@ -47,7 +47,7 @@ for personaje in famosos:
                 downloader_threads=4,
                 storage={'root_dir': output_dir}
             )
-            
+            #Descarga imágenes automáticamente desde Bing
             # Pedimos 80 por cada variación y usamos el número de imágenes actuales como offset
             bing_crawler.crawl(
                 keyword=termino_busqueda, 

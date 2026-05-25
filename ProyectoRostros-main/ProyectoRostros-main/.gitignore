@@ -27,3 +27,5 @@ data/03_final/*
 
 # Jupyter
 .ipynb_checkpoints
+
+modelo_lbph.yml

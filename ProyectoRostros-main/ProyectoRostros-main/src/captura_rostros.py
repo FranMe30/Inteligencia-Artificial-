@@ -1,68 +1,72 @@
 import cv2
 import os
+import time
 
-# --- CONFIGURACIÓN ---
-dataset_dir = '../data/02_processed'  
-nombre_persona = 'Nombre' 
+dataset_dir = '../data/02_processed'
+nombre_persona = 'Alumno_Francisco'
 ruta_completa = os.path.join(dataset_dir, nombre_persona)
-fotos_maximas = 400
+fotos_maximas = 300
 
-# Crear la carpeta si no existe
-if not os.path.exists(ruta_completa):
-    os.makedirs(ruta_completa)
-    print(f"Carpeta creada: {ruta_completa}")
+os.makedirs(ruta_completa, exist_ok=True)
 
-# Cargar el modelo preentrenado de OpenCV 
-cascade_path = cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
-face_cascade = cv2.CascadeClassifier(cascade_path)
-
-# Iniciar la cámara
+#Detector facial Haar Cascade
+#Modelo preentrenado para detectar rostros frontales
+face_cascade = cv2.CascadeClassifier(
+    cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
+)
+#abrir la camara web
 cap = cv2.VideoCapture(0)
 
 contador = 0
-print(f"Iniciando captura para {nombre_persona}... Mira a la cámara.")
+ultimo_guardado = 0
+intervalo = 0.3  # segundos entre capturas
+
+print(f"Iniciando captura para {nombre_persona}")
 
 while True:
-    # Leer el frame de la cámara
     ret, frame = cap.read()
     if not ret:
-        print("Error al acceder a la cámara.")
         break
+    #Conversión a escala de grises
+    #Reduce procesamiento y mejora detección facial
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    # Convertir el frame a escala de grises (mejora la precisión de la detección del rostro)
-    grises = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    #Detecta las caras dentro del frame
+    rostros = face_cascade.detectMultiScale(
+        gray,
+        scaleFactor=1.2,
+        minNeighbors=5,
+        minSize=(80, 80)
+    )
 
-    # Detectar rostros en el frame
-    rostros = face_cascade.detectMultiScale(grises, scaleFactor=1.3, minNeighbors=1)
-
+    #Recorte del rostro
     for (x, y, w, h) in rostros:
-        # Dibujar rectángulo para que veas qué está capturando
-        cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 124, 124), 2)
+        cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
-        # Recortar solo la región del rostro
-        rostro_recortado = frame[y:y+h, x:x+w]
-        
-        # Redimensionar a 160x160 píxeles
-        rostro_redimensionado = cv2.resize(rostro_recortado, (160, 160))
+        if time.time() - ultimo_guardado >= intervalo:
+            #Extrae únicamente la región facial
+            rostro = gray[y:y+h, x:x+w]
+            #Mejora de iluminación y contraste
+            rostro = cv2.equalizeHist(rostro)
+            #Todas las imágenes quedan del mismo tamaño para el entrenamiento
+            rostro = cv2.resize(rostro, (160, 160))
 
-        # Guardar la imagen en la carpeta
-        nombre_archivo = f"{ruta_completa}/rostro_{contador}.jpg"
-        cv2.imwrite(nombre_archivo, rostro_redimensionado)
-        
-        contador += 1
-        print(f"Capturando foto {contador}/{fotos_maximas}")
+            ruta = os.path.join(ruta_completa, f"rostro_{contador}.jpg")
+            #Guarda automáticamente cada rostro capturado
+            cv2.imwrite(ruta, rostro)
 
-    # Mostrar la ventana en vivo
-    cv2.imshow('Captura de Dataset Facial', frame)
+            contador += 1
+            ultimo_guardado = time.time()
 
-    # El programa se detiene de dos formas:
-    # 1. Si llega al límite de fotos máximas
-    # 2. Si presionas la tecla 'ESC' (código 27)
+            print(f"Foto {contador}/{fotos_maximas}")
+
+    cv2.imshow("Captura Dataset", frame)
+
     tecla = cv2.waitKey(1)
     if tecla == 27 or contador >= fotos_maximas:
         break
 
-# Limpieza y cierre
-print("Captura finalizada con éxito.")
 cap.release()
 cv2.destroyAllWindows()
+
+print("Captura finalizada.")

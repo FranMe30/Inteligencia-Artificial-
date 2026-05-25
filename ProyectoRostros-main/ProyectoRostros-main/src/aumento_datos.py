@@ -12,19 +12,23 @@ def aplicar_transformacion_aleatoria(img):
     
     # 1. Espejado horizontal (50% de probabilidad)
     if random.random() > 0.5:
+        #Invierte la imagen horizontalmente. Esto es útil para aumentar la diversidad del dataset sin alterar las características faciales esenciales
         img = cv2.flip(img, 1) # 1 significa eje Y (horizontal)
         
     # 2. Ajuste de brillo (aleatorio entre oscurecer un poco y aclarar un poco)
+    #Simula distintas condiciones de iluminación.
     valor_brillo = random.randint(-40, 40)
     img_brillo = np.int16(img) + valor_brillo
     img_brillo = np.clip(img_brillo, 0, 255) 
     img = np.uint8(img_brillo)
     
     # 3. Rotación leve (aleatoria entre -10 y 10 grados)
+    #Simula distintas ángulos de captura
     angulo = random.uniform(-10, 10)
     h, w = img.shape[:2]
     centro = (w // 2, h // 2)
     matriz_rotacion = cv2.getRotationMatrix2D(centro, angulo, 1.0)
+    #cv2.warpAffine()
     img = cv2.warpAffine(img, matriz_rotacion, (w, h), borderMode=cv2.BORDER_REPLICATE)
     
     return img
@@ -62,6 +66,7 @@ for persona in carpetas_personas:
         nombre_base = os.path.basename(ruta_imagen).replace('.jpg', '')
         nueva_ruta = os.path.join(ruta_persona, f"{nombre_base}_aug_{contador_nuevas}.jpg")
         
+        #Guarda nuevas imágenes artificiales
         cv2.imwrite(nueva_ruta, img_aumentada)
         contador_nuevas += 1
         
