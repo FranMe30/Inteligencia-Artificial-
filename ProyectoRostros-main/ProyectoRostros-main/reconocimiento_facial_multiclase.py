@@ -14,7 +14,7 @@ IMAGE_SIZE = (160, 160)
 # Valores más bajos = más estricto
 # Valores más altos = más permisivo
 #Define si el rostro será reconocido o marcado como desconocido
-CONFIDENCE_THRESHOLD = 70
+CONFIDENCE_THRESHOLD = 75
 
 # Lista de personas permitidas para el reconocimiento
 PERSONAS_PERMITIDAS = [
